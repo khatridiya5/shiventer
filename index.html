@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shiv Enterprise — All Type of Machinery Parts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Teko:wght@400;500;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --gold:#F5A623;--gold2:#E8891A;--red:#C0392B;--dark:#0A0E14;--dark2:#0f1520;
+  --surface:#131b27;--surface2:#1a2438;--white:#ffffff;--muted:rgba(255,255,255,0.45);
+  --border:rgba(245,166,35,0.15);--nav-h:68px;
+}
+html{scroll-behavior:smooth;overflow-x:hidden;}
+body{font-family:'Barlow',sans-serif;background:var(--dark);color:var(--white);overflow-x:hidden;}
+
+.cursor,.cursor-ring{display:none;}
+@media(min-width:769px){
+  .cursor{width:10px;height:10px;border-radius:50%;background:var(--gold);position:fixed;top:0;left:0;z-index:9999;pointer-events:none;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s;mix-blend-mode:difference;display:block;}
+  .cursor-ring{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--gold);position:fixed;top:0;left:0;z-index:9998;pointer-events:none;transform:translate(-50%,-50%);transition:all .12s ease;opacity:0.6;display:block;}
+}
+
+#canvas-container{position:fixed;inset:0;z-index:0;pointer-events:none;}
+@media(min-width:769px){#canvas-container{pointer-events:auto;}}
+
+body::after{content:'';position:fixed;inset:0;z-index:1;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;opacity:0.5;}
+
+nav{position:fixed;top:0;left:0;width:100%;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:var(--nav-h);background:rgba(10,14,20,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);gap:24px;}
+@keyframes spin3d{0%{transform:rotateY(0deg);}100%{transform:rotateY(360deg);}}
+.logo-txt{font-family:'Orbitron',sans-serif;font-weight:700;font-size:22px;letter-spacing:0.06em;color:var(--white);white-space:nowrap;}
+.logo-txt span{color:var(--gold);}
+.nav-links{display:flex;gap:36px;list-style:none;margin:0 auto;}
+.nav-links a{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:15px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5);text-decoration:none;transition:color .2s;position:relative;white-space:nowrap;}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1.5px;background:var(--gold);transition:width .3s;}
+.nav-links a:hover{color:var(--white);}
+.nav-links a:hover::after{width:100%;}
+.nav-call{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--dark);background:var(--gold);border:none;cursor:pointer;padding:9px 20px;text-decoration:none;transition:background .2s,transform .15s;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;}
+.nav-call:hover{background:var(--gold2);transform:translateY(-1px);}
+.menu-toggle{display:none;background:none;border:none;cursor:pointer;color:var(--white);font-size:26px;padding:4px;line-height:1;flex-shrink:0;}
+
+@media(max-width:768px){
+  :root{--nav-h:60px;}
+  nav{padding:0 16px;gap:12px;display:grid;grid-template-columns:1fr auto auto;align-items:center;}
+  .logo-txt{font-size:17px;}
+  .menu-toggle{display:flex;align-items:center;justify-content:center;}
+  /* FIX 1: Force gold on mobile call button */
+  .nav-call{padding:7px 12px;font-size:11px;order:2;background:var(--gold) !important;color:var(--dark) !important;}
+  .nav-links{position:fixed;top:var(--nav-h);left:0;width:100%;flex-direction:column;align-items:center;gap:0;background:rgba(10,14,20,0.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0;margin:0;max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s ease;}
+  .nav-links.active{max-height:300px;padding:16px 0 20px;}
+  .nav-links li{width:100%;text-align:center;}
+  .nav-links a{display:block;padding:13px 0;font-size:16px;color:rgba(255,255,255,0.7);letter-spacing:0.2em;}
+  .nav-links a:hover{color:var(--gold);}
+  .nav-links a::after{display:none;}
+}
+
+.hero{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:calc(var(--nav-h) + 40px) 72px 80px;pointer-events:auto;}
+.hero-badge{display:inline-flex;align-items:center;gap:10px;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:15px;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;opacity:0;animation:up .9s .2s ease forwards;}
+.hero-badge::before{content:'';width:36px;height:1.5px;background:var(--gold);}
+.hero h1{font-family:'Teko',sans-serif;font-weight:700;font-size:clamp(56px,9vw,128px);line-height:0.88;letter-spacing:-0.01em;color:var(--white);max-width:820px;opacity:0;animation:up .9s .35s ease forwards;}
+.hero h1 .gold{color:transparent;-webkit-text-stroke:2px var(--gold);}
+.hero h1 .block{display:block;}
+.hero-tagline{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:17px;line-height:1.7;color:rgba(255,255,255,0.45);max-width:420px;margin-top:20px;opacity:0;animation:up .9s .5s ease forwards;}
+.hero-row{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;margin-top:48px;opacity:0;animation:up .9s .65s ease forwards;}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-gold{background:var(--gold);color:var(--dark);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:18px;letter-spacing:0.1em;text-transform:uppercase;border:none;cursor:pointer;padding:14px 36px;text-decoration:none;display:inline-block;transition:background .2s,transform .15s;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));}
+.btn-gold:hover{background:var(--gold2);transform:translateY(-2px);}
+.btn-outline{background:transparent;border:1px solid rgba(245,166,35,0.4);color:var(--gold);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:18px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;padding:14px 36px;text-decoration:none;display:inline-block;transition:border-color .2s,transform .15s;}
+.btn-outline:hover{border-color:var(--gold);transform:translateY(-2px);}
+
+/* FIX 2: Hero stats — no wrapping on mobile */
+.hero-stats{display:flex;gap:32px;}
+.hstat{text-align:right;}
+.hstat-n{font-family:'Teko',sans-serif;font-weight:600;font-size:48px;line-height:1;color:var(--white);}
+.hstat-n sup{font-size:38px;color:var(--gold);}
+.hstat-l{font-family:'Rajdhani',sans-serif;font-size:18px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-top:2px;}
+
+@media(max-width:768px){
+  .hero{padding:calc(var(--nav-h) + 20px) 20px 48px;justify-content:flex-end;min-height:100svh;}
+  .hero-badge{font-size:12px;letter-spacing:0.18em;}
+  .hero h1{font-size:clamp(46px,14vw,72px);line-height:0.9;}
+  .hero h1 .gold{-webkit-text-stroke:1.5px var(--gold);}
+  .hero-tagline{font-size:14px;max-width:100%;}
+  .hero-row{flex-direction:column;align-items:flex-start;gap:24px;margin-top:32px;}
+  /* FIX 2: Stats in a row, no wrap, left aligned */
+  .hero-stats{gap:16px;flex-wrap:nowrap;width:100%;justify-content:flex-start;overflow:hidden;}
+  .hstat{text-align:left;flex:1;min-width:0;}
+  .hstat-n{font-size:32px;}
+  .hstat-n sup{font-size:22px;}
+  .hstat-l{font-size:11px;letter-spacing:0.08em;white-space:nowrap;}
+}
+
+.drag-hint{position:fixed;top:50%;right:32px;transform:translateY(-50%);z-index:20;writing-mode:vertical-rl;font-family:'Rajdhani',sans-serif;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.18);display:flex;align-items:center;gap:10px;opacity:0;animation:up 1s 1.5s ease forwards;}
+.drag-hint::before{content:'';display:block;width:1px;height:36px;background:var(--gold);opacity:0.5;}
+@media(max-width:768px){.drag-hint{display:none;}}
+
+.scroll-indicator{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:20;display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0;animation:up 1s 1.3s ease forwards;}
+.scroll-indicator span{font-family:'Rajdhani',sans-serif;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.22);}
+.scroll-indicator i{display:block;width:1px;height:44px;background:linear-gradient(to bottom,rgba(245,166,35,0.9),transparent);animation:pulse 2s ease-in-out infinite;}
+@media(max-width:768px){.scroll-indicator{bottom:20px;}.scroll-indicator span{font-size:10px;}.scroll-indicator i{height:32px;}}
+
+section{position:relative;z-index:10;}
+.s-eye{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:20px;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.s-head{font-family:'Teko',sans-serif;font-weight:700;font-size:clamp(35px,5.5vw,74px);line-height:0.9;letter-spacing:-0.01em;color:var(--white);}
+
+.products{background:var(--dark2);padding:110px 72px;border-top:1px solid var(--border);}
+.prod-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:56px;padding-bottom:28px;border-bottom:1px solid var(--border);}
+
+.about-strip{background:var(--gold);padding:0 72px;display:flex;align-items:stretch;overflow:hidden;flex-wrap:wrap;}
+.astrip-item{flex:1;min-width:140px;padding:30px 0;text-align:center;border-right:1px solid rgba(0,0,0,0.12);}
+.astrip-item:last-child{border-right:none;}
+.astrip-val{font-family:'Teko',sans-serif;font-weight:700;font-size:30px;color:var(--dark);display:block;}
+.astrip-key{font-family:'Rajdhani',sans-serif;font-size:15px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(0,0,0,0.5);margin-top:3px;display:block;}
+@media(max-width:768px){
+  .about-strip{padding:0 16px;}
+  .astrip-item{min-width:50%;border-right:none;border-bottom:1px solid rgba(0,0,0,0.1);}
+  .astrip-item:nth-child(odd){border-right:1px solid rgba(0,0,0,0.1);}
+  .astrip-item:last-child{border-bottom:none;}
+  .astrip-val{font-size:25px;}
+}
+
+.about{background:var(--dark);padding:110px 72px;display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;border-top:1px solid var(--border);}
+.about-left .s-head{margin-bottom:20px;}
+.about-body{font-size:17px;line-height:1.85;color:rgba(255,255,255,0.45);margin-bottom:32px;}
+.about-details{display:flex;flex-direction:column;gap:16px;}
+.adetail{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border:1px solid var(--border);background:var(--surface);transition:border-color .2s,transform .2s;}
+.adetail:hover{border-color:rgba(245,166,35,0.4);transform:translateX(5px);}
+.adetail-icon{width:36px;height:36px;background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.25);display:grid;place-items:center;flex-shrink:0;}
+.adetail-icon svg{width:17px;height:17px;}
+.adetail-label{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:15px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+.adetail-val{font-size:14px;line-height:1.6;color:rgba(255,255,255,0.7);}
+.about-right{perspective:1000px;}
+.about-3d-card{background:var(--surface);border:1px solid var(--border);padding:36px;transform:rotateY(-6deg) rotateX(4deg);transition:transform .4s ease;position:relative;box-shadow:20px 20px 60px rgba(0,0,0,0.5),-2px -2px 20px rgba(245,166,35,0.05);}
+.about-right:hover .about-3d-card{transform:rotateY(0deg) rotateX(0deg);}
+.about-3d-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);}
+.card-gst-title{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:24px;}
+.card-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);}
+.card-row:last-child{border-bottom:none;}
+.card-k{font-size:12px;color:rgba(255,255,255,0.35);}
+.card-v{font-family:'Teko',sans-serif;font-weight:600;font-size:15px;color:var(--white);letter-spacing:0.04em;}
+@media(max-width:768px){.about{grid-template-columns:1fr;padding:72px 16px;gap:40px;}.about-3d-card{transform:none;padding:24px;}.adetail-val a{color:var(--gold);}}
+
+.inquiry{background:var(--dark2);padding:110px 72px;border-top:1px solid var(--border);}
+.inquiry-inner{display:grid;grid-template-columns:1fr 1.4fr;gap:64px;align-items:start;margin-top:52px;}
+.inquiry-info{display:flex;flex-direction:column;gap:20px;}
+.inq-panel{padding:22px 20px;border:1px solid var(--border);background:var(--surface);position:relative;overflow:hidden;transition:border-color .25s,transform .2s;}
+.inq-panel::after{content:'';position:absolute;top:0;left:0;width:0;height:2px;background:var(--gold);transition:width .3s;}
+.inq-panel:hover{border-color:rgba(245,166,35,0.4);transform:translateX(5px);}
+.inq-panel:hover::after{width:100%;}
+.inq-panel-label{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:15px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.inq-panel-val{font-family:'Teko',sans-serif;font-weight:500;font-size:24px;letter-spacing:0.03em;color:var(--white);line-height:1.2;}
+.inq-panel-sub{font-size:14px;color:rgba(255,255,255,0.38);margin-top:4px;line-height:1.6;}
+.inquiry-form-wrap{background:var(--surface);border:1px solid var(--border);position:relative;overflow:hidden;}
+.inquiry-form-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);}
+.inquiry-form-wrap::after{content:'INQUIRY';position:absolute;top:20px;right:20px;font-family:'Teko',sans-serif;font-size:15px;letter-spacing:0.25em;color:rgba(245,166,35,0.08);pointer-events:none;}
+.inquiry-form-inner{padding:36px 32px;}
+.form-title{font-family:'Teko',sans-serif;font-weight:600;font-size:28px;letter-spacing:0.04em;color:var(--white);margin-bottom:4px;}
+.form-subtitle{font-size:17px;color:rgba(255,255,255,0.3);margin-bottom:28px;font-family:'Rajdhani',sans-serif;letter-spacing:0.05em;}
+#inquiryForm{display:flex;flex-direction:column;gap:14px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-field{position:relative;}
+.form-field label{display:block;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:6px;}
+#inquiryForm input,#inquiryForm textarea,#inquiryForm select{width:100%;padding:11px 14px;background:rgba(10,14,20,0.7);border:1px solid rgba(245,166,35,0.12);color:var(--white);font-family:'Rajdhani',sans-serif;font-size:14px;letter-spacing:0.04em;outline:none;transition:border-color .2s,background .2s;appearance:none;-webkit-appearance:none;}
+#inquiryForm input::placeholder,#inquiryForm textarea::placeholder{color:rgba(255,255,255,0.18);}
+#inquiryForm input:focus,#inquiryForm textarea:focus,#inquiryForm select:focus{border-color:var(--gold);background:rgba(15,21,32,0.9);}
+#inquiryForm select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23F5A623' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
+#inquiryForm select option{background:#0f1520;color:var(--white);}
+#inquiryForm textarea{resize:vertical;min-height:100px;}
+.btn-submit{background:var(--gold);color:var(--dark);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;letter-spacing:0.12em;text-transform:uppercase;border:none;cursor:pointer;padding:13px 28px;display:flex;align-items:center;gap:10px;justify-content:center;transition:background .2s,transform .15s;width:100%;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));}
+.btn-submit:hover{background:var(--gold2);transform:translateY(-2px);}
+.btn-submit svg{width:16px;height:16px;transition:transform .2s;}
+.btn-submit:hover svg{transform:translateX(4px);}
+#formStatus{font-family:'Rajdhani',sans-serif;font-size:13px;letter-spacing:0.08em;min-height:20px;}
+#formStatus.success{color:#72d48a;}
+#formStatus.error{color:#f57e8a;}
+.form-divider{display:flex;align-items:center;gap:12px;margin:4px 0;}
+.form-divider span{font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:0.15em;color:rgba(255,255,255,0.2);white-space:nowrap;}
+.form-divider::before,.form-divider::after{content:'';flex:1;height:1px;background:rgba(245,166,35,0.1);}
+@media(max-width:768px){
+  .inquiry{padding:72px 16px;}
+  .inquiry-inner{grid-template-columns:1fr;gap:36px;}
+  .inquiry-info{display:none;}
+  .form-row{grid-template-columns:1fr;}
+  .inquiry-form-inner{padding:24px 18px;}
+  .form-title{font-size:24px;}
+}
+@media(max-width:480px){.inquiry-form-inner{padding:20px 14px;}}
+
+.location{background:var(--dark2);padding:110px 72px;border-top:1px solid var(--border);}
+.location-inner{display:grid;grid-template-columns:1fr 1.4fr;gap:56px;align-items:start;margin-top:52px;}
+.location-details{display:flex;flex-direction:column;gap:20px;}
+.ldetail{display:flex;gap:14px;align-items:flex-start;padding:18px 20px;border:1px solid var(--border);background:var(--surface);position:relative;overflow:hidden;transition:border-color .25s,transform .2s;}
+.ldetail::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--gold);transition:width .3s;}
+.ldetail:hover{border-color:rgba(245,166,35,0.35);transform:translateY(-3px);}
+.ldetail:hover::after{width:100%;}
+.ldetail-icon{width:40px;height:40px;flex-shrink:0;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.2);display:grid;place-items:center;}
+.ldetail-icon svg{width:19px;height:19px;}
+.ldetail-label{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:13px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+.ldetail-val{font-size:17px;line-height:1.6;color:rgba(255,255,255,0.72);}
+.ldetail-val a{color:var(--gold);text-decoration:none;}
+.ldetail-val a:hover{text-decoration:underline;}
+.map-wrapper{position:relative;border:1px solid var(--border);overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.4);}
+.map-wrapper::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(245,166,35,0.06),transparent 50%);z-index:1;pointer-events:none;}
+.map-wrapper iframe{display:block;width:100%;height:420px;border:none;filter:grayscale(30%) contrast(1.1);}
+.map-badge{position:absolute;top:14px;left:14px;z-index:2;background:var(--dark);border:1px solid var(--border);padding:9px 14px;display:flex;align-items:center;gap:8px;}
+.map-badge span{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;color:var(--white);}
+.map-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:blink 1.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.7);}}
+@media(max-width:768px){.location{padding:72px 16px;}.location-inner{grid-template-columns:1fr;}.map-wrapper iframe{height:280px;}}
+
+footer{position:relative;z-index:10;background:#050709;padding:44px 72px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+.foot-logo{font-family:'Teko',sans-serif;font-weight:700;font-size:20px;letter-spacing:0.06em;color:var(--white);}
+.foot-logo span{color:var(--gold);}
+.foot-gst{font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:0.08em;color:rgba(255,255,255,0.22);}
+.foot-links{display:flex;gap:20px;flex-wrap:wrap;}
+.foot-links a{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.22);text-decoration:none;transition:color .2s;}
+.foot-links a:hover{color:var(--gold);}
+@media(max-width:768px){footer{flex-direction:column;align-items:center;text-align:center;padding:32px 16px;gap:16px;}}
+
+@keyframes up{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{opacity:0.4;}50%{opacity:1;}}
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .8s ease,transform .8s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* PRODUCT CARDS */
+.prod-card:hover .card-bg img{filter:brightness(0.85) saturate(1.1);}
+.prod-card:hover .card-bg::after{background:linear-gradient(to top,rgba(0,0,0,0.75) 35%,rgba(0,0,0,0.05) 100%);}
+.card-bg img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;filter:brightness(0.6) saturate(0.8);transition:filter 0.4s ease;transform:scale(1);}
+.card-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.88) 35%,rgba(0,0,0,0.2) 100%);z-index:1;transition:background 0.4s ease;}
+.card-content{z-index:6;}
+.cards-row{display:flex;gap:1.2rem;overflow-x:auto;padding:60px 0 32px;scroll-behavior:smooth;-ms-overflow-style:none;scrollbar-width:none;margin:0 -8px;}
+.cards-row::-webkit-scrollbar{display:none;}
+.prod-card{flex:0 0 250px;height:360px;border-radius:20px;position:relative;cursor:pointer;overflow:visible;transition:transform .3s ease;}
+.prod-card:hover{transform:translateY(-10px);}
+.card-bg{position:absolute;inset:0;border-radius:20px;overflow:hidden;}
+.card-icon-float{position:absolute;top:-32px;left:50%;transform:translateX(-50%);width:110px;height:110px;display:flex;align-items:center;justify-content:center;z-index:10;pointer-events:none;filter:drop-shadow(0 12px 24px rgba(0,0,0,0.6));transition:transform .3s ease;}
+.card-icon-float svg{width:90px;height:90px;}
+.card-content{position:absolute;bottom:0;left:0;right:0;padding:1rem 1rem 1.3rem;z-index:5;}
+.card-tag{font-size:18px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;opacity:.75;margin-bottom:4px;font-family:'Rajdhani',sans-serif;}
+.card-title{font-family:'Teko',sans-serif;font-weight:600;font-size:50px;line-height:1.05;color:#fff;margin:0 0 5px;}
+.card-sub{font-size:15px;opacity:.65;line-height:1.4;color:#fff;margin:0;}
+.prod-scroll-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:12px;}
+.pscroll-btn{background:var(--surface);border:1px solid var(--border);color:rgba(255,255,255,0.5);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:13px;letter-spacing:0.08em;padding:8px 20px;border-radius:4px;cursor:pointer;transition:background .2s,color .2s,border-color .2s;}
+.pscroll-btn:hover{background:var(--gold);color:var(--dark);border-color:var(--gold);}
+.cc1 .card-bg{background:linear-gradient(145deg,#1e3a5c,#0d2340);border:1px solid #2a4d73;}.cc1 .card-tag{color:#7ec8f5;}
+.cc2 .card-bg{background:linear-gradient(145deg,#3d1f00,#1e1000);border:1px solid #6b3800;}.cc2 .card-tag{color:#f5a623;}
+.cc3 .card-bg{background:linear-gradient(145deg,#1a3825,#0e2016);border:1px solid #2d5e3f;}.cc3 .card-tag{color:#72d48a;}
+.cc4 .card-bg{background:linear-gradient(145deg,#3b1f3b,#200d20);border:1px solid #5e3060;}.cc4 .card-tag{color:#d47de0;}
+.cc5 .card-bg{background:linear-gradient(145deg,#1f2e1a,#121c0f);border:1px solid #3a5230;}.cc5 .card-tag{color:#a2d46e;}
+.cc6 .card-bg{background:linear-gradient(145deg,#2a1f00,#160f00);border:1px solid #5a3d00;}.cc6 .card-tag{color:#f5c842;}
+.cc7 .card-bg{background:linear-gradient(145deg,#1a1f3a,#0d1020);border:1px solid #2a3060;}.cc7 .card-tag{color:#7eaaf5;}
+.cc8 .card-bg{background:linear-gradient(145deg,#2a1215,#160608);border:1px solid #6b2030;}.cc8 .card-tag{color:#f57e8a;}
+@media(max-width:768px){.products{padding:72px 16px;}}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+<div id="canvas-container"></div>
+
+<nav>
+  <a href="#" class="nav-logo">
+    <span class="logo-txt">SHIV <span>ENTERPRISE</span></span>
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#products" class="nav-link-item">PRODUCTS</a></li>
+    <li><a href="#about" class="nav-link-item">ABOUT</a></li>
+    <li><a href="#location" class="nav-link-item">LOCATION</a></li>
+  </ul>
+  <a href="tel:9979900505" class="nav-call">📞 CALL NOW</a>
+  <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">Ahmedabad's Trusted Machinery Parts Supplier</div>
+  <h1>
+    <span class="block">ALL TYPE OF</span>
+    <span class="block gold">BEARING</span>
+    <span class="block">& BELTS.</span>
+  </h1>
+  <p class="hero-tagline">Precision-engineered parts and high-performance Bearings, Belts, Circlips, Oil Seals, Hose Clips & more — built for durability, accuracy, and reliability in every application.</p>
+  <div class="hero-row">
+    <div class="hero-ctas">
+      <a href="#products" class="btn-gold">Our Products</a>
+      <a href="#location" class="btn-outline">Find Us</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-n">15<sup>+</sup></div><div class="hstat-l">Years Active</div></div>
+      <div class="hstat"><div class="hstat-n">10<sup>+</sup></div><div class="hstat-l">Part Categories</div></div>
+      <div class="hstat"><div class="hstat-n">500<sup>+</sup></div><div class="hstat-l">Customers</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="drag-hint">Drag to rotate</div>
+<div class="scroll-indicator"><span>Scroll</span><i></i></div>
+
+<div class="about-strip" id="about-strip">
+  <div class="astrip-item"><span class="astrip-val">SKF</span><span class="astrip-key">Bearings</span></div>
+  <div class="astrip-item"><span class="astrip-val">Fenner</span><span class="astrip-key">Timing Belts</span></div>
+  <div class="astrip-item"><span class="astrip-val">SS 202/304/316</span><span class="astrip-key">Stainless Parts</span></div>
+  <div class="astrip-item"><span class="astrip-val">ISO</span><span class="astrip-key">Quality Standard</span></div>
+  <div class="astrip-item"><span class="astrip-val">Bulk</span><span class="astrip-key">Orders Welcome</span></div>
+</div>
+
+<section class="products" id="products">
+  <div class="prod-header reveal">
+    <div>
+      <div class="s-eye">What We Supply</div>
+      <div class="s-head">Our Product<br>Catalogue</div>
+    </div>
+  </div>
+  <div class="cards-row" id="prodCardsRow">
+    <div class="prod-card cc1 reveal">
+      <div class="card-bg"><img src="Images/bearing.png" alt="SKF Bearing"></div>
+      <div class="card-icon-float"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="44" fill="#7ec8f5" opacity="0.08"/><circle cx="50" cy="50" r="32" fill="none" stroke="#7ec8f5" stroke-width="5"/><circle cx="50" cy="50" r="16" fill="none" stroke="#7ec8f5" stroke-width="4"/><circle cx="50" cy="50" r="5" fill="#7ec8f5"/><circle cx="50" cy="18" r="4.5" fill="#7ec8f5"/><circle cx="50" cy="82" r="4.5" fill="#7ec8f5"/><circle cx="18" cy="50" r="4.5" fill="#7ec8f5"/><circle cx="82" cy="50" r="4.5" fill="#7ec8f5"/></svg></div>
+      <div class="card-content"><p class="card-tag">Industrial Grade</p><h3 class="card-title">SKF Bearings</h3><p class="card-sub">Ball & roller bearings for heavy machinery</p></div>
+    </div>
+    <div class="prod-card cc2 reveal">
+      <div class="card-bg"><img src="Images/circlip.png" alt="Circlip"></div>
+      <div class="card-icon-float"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="none" stroke="#f5a623" stroke-width="8" stroke-dasharray="220 30"/><circle cx="50" cy="10" r="6" fill="#f5a623"/><circle cx="50" cy="90" r="6" fill="#f5a623"/></svg></div>
+      <div class="card-content"><p class="card-tag">Retaining Rings</p><h3 class="card-title">Circlip</h3><p class="card-sub">Internal & external for shaft retention</p></div>
+    </div>
+    <div class="prod-card cc3 reveal">
+      <div class="card-bg"><img src="Images/pillow-block.png" alt="Pillow Block"></div>
+      <div class="card-icon-float"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="18" y="55" width="64" height="22" rx="6" fill="#72d48a" opacity="0.9"/><circle cx="50" cy="40" r="17" fill="none" stroke="#72d48a" stroke-width="4"/><circle cx="50" cy="40" r="7" fill="#72d48a"/></svg></div>
+      <div class="card-content"><p class="card-tag">Mounted Units</p><h3 class="card-title">Pillow Block</h3><p class="card-sub">Self-aligning for conveyor & shaft support</p></div>
+    </div>
+    <div class="prod-card cc4 reveal">
+      <div class="card-bg"><img src="Images/ss-bolts.png" alt="SS-Bolts"></div>
+      <div class="card-icon-float"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><line x1="50" y1="12" x2="50" y2="88" stroke="#d47de0" stroke-width="9" stroke-linecap="round"/><rect x="32" y="20" width="36" height="13" rx="4" fill="#d47de0" opacity="0.95"/><rect x="32" y="40" width="36" height="13" rx="4" fill="#d47de0" opacity="0.6"/></svg></div>
+      <div class="card-content"><p class="card-tag">Stainless Steel</p><h3 class="card-title">SS Bolts</h3><p class="card-sub">Grades 202/304/316 corrosion resistant</p></div>
+    </div>
+    <div class="prod-card cc5 reveal">
+      <div class="card-bg"><img src="Images/oil-seal.png" alt="Oil Seals"></div>
+      <div class="card-icon-float"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="24" fill="none" stroke="#a2d46e" stroke-width="3.5"/><circle cx="50" cy="50" r="10" fill="#a2d46e" opacity="0.9"/></svg></div>
+      <div class="card-content"><p class="card-tag">Sealing Solutions</p><h3 class="card-title">Oil Seals</h3><p class="card-sub">Rotary shaft seals for pumps & gearboxes</p></div>
+    </div>
+    <div class="prod-card cc6 reveal">
+      <div class="card-bg"><img src="Images/fenner-belt.png" alt="Fenner Belt"></div>
+      <div class="card-icon-float"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M12 36 Q22 24 32 36 Q42 48 52 36 Q62 24 72 36 Q82 48 88 48" fill="none" stroke="#f5c842" stroke-width="5.5" stroke-linecap="round"/><path d="M12 54 Q22 42 32 54 Q42 66 52 54 Q62 42 72 54 Q82 66 88 66" fill="none" stroke="#f5c842" stroke-width="5.5" stroke-linecap="round" opacity="0.55"/></svg></div>
+      <div class="card-content"><p class="card-tag">Power Transmission</p><h3 class="card-title">Fenner Belt</h3><p class="card-sub">Synchronous timing belts for precision drives</p></div>
+    </div>
+    <div class="prod-card cc7 reveal">
+      <div class="card-bg"><img src="Images/hose-clips.png" alt="Hose Clips"></div>
+      <div class="card-icon-float"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="35" fill="none" stroke="#7eaaf5" stroke-width="7" stroke-dasharray="180 40"/><rect x="68" y="30" width="18" height="8" rx="2" fill="#7eaaf5"/></svg></div>
+      <div class="card-content"><p class="card-tag">Hose Clamps</p><h3 class="card-title">Hose Clips</h3><p class="card-sub">SS & MS clamps for plumbing & automotive</p></div>
+    </div>
+    <div class="prod-card cc8 reveal">
+      <div class="card-bg"><img src="Images/Copper-wire.png" alt="BIC Copper Wire"></div>
+      <div class="card-icon-float"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="30" width="28" height="40" rx="4" fill="none" stroke="#f57e8a" stroke-width="3.5"/><path d="M50 50 L78 50" stroke="#f57e8a" stroke-width="4" stroke-linecap="round"/><path d="M65 38 L78 50 L65 62" fill="none" stroke="#f57e8a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="card-content"><p class="card-tag">Electrical</p><h3 class="card-title">BIC Copper Wire</h3><p class="card-sub">High-conductivity wire for motor rewinding</p></div>
+    </div>
+  </div>
+  <div class="prod-scroll-btns">
+    <button class="pscroll-btn" onclick="document.getElementById('prodCardsRow').scrollBy({left:-240,behavior:'smooth'})">← Prev</button>
+    <button class="pscroll-btn" onclick="document.getElementById('prodCardsRow').scrollBy({left:240,behavior:'smooth'})">Next →</button>
+  </div>
+</section>
+
+<section class="inquiry" id="inquiry">
+  <div class="s-eye reveal">Get In Touch</div>
+  <div class="s-head reveal">Send An<br>Enquiry</div>
+  <div class="inquiry-inner">
+    <div class="inquiry-info">
+      <div class="inq-panel reveal"><div class="inq-panel-label">Why Enquire?</div><div class="inq-panel-val">Bulk Orders Welcome</div><div class="inq-panel-sub">We handle large volume orders for factories, workshops & OEM requirements across Gujarat.</div></div>
+      <div class="inq-panel reveal"><div class="inq-panel-label">Response Time</div><div class="inq-panel-val">Same Day Reply</div><div class="inq-panel-sub">Our team responds to all enquiries on the same business day.</div></div>
+      <div class="inq-panel reveal"><div class="inq-panel-label">Call Directly</div><div class="inq-panel-val">+91-9979900505</div><div class="inq-panel-sub">Mon – Sat, 9:00 AM to 7:00 PM</div></div>
+      <div class="inq-panel reveal"><div class="inq-panel-label">Email Us</div><div class="inq-panel-val" style="font-size:18px;">kanulic30@gmail.com</div><div class="inq-panel-sub">For catalogues, quotes & part specifications</div></div>
+    </div>
+    <div class="inquiry-form-wrap reveal">
+      <div class="inquiry-form-inner">
+        <div class="form-title">Product Enquiry</div>
+        <div class="form-subtitle">Fill in your details and we'll get back to you</div>
+        <form id="inquiryForm" novalidate>
+          <div class="form-row">
+            <div class="form-field"><label for="inq-name">Full Name</label><input type="text" id="inq-name" name="name" placeholder="Your name" required></div>
+            <div class="form-field"><label for="inq-phone">Phone Number</label><input type="tel" id="inq-phone" name="phone" placeholder="+91 XXXXX XXXXX" required></div>
+          </div>
+          <div class="form-row">
+            <div class="form-field"><label for="inq-email">Email (Optional)</label><input type="email" id="inq-email" name="email" placeholder="your@email.com"></div>
+            <div class="form-field"><label for="inq-city">City</label><input type="text" id="inq-city" name="city" placeholder="Ahmedabad, Surat..."></div>
+          </div>
+          <div class="form-field">
+            <label for="inq-product">Product Category</label>
+            <select id="inq-product" name="product">
+              <option value="" disabled selected>Select a product category</option>
+              <option>SKF Bearings</option><option>Circlip</option><option>Pillow Block (Pelow)</option>
+              <option>SS Bolts 202 / 304 / 316</option><option>Oil Seals</option><option>Fenner Timing Belt</option>
+              <option>Hose Clips</option><option>BIC Copper Wire</option><option>Multiple / Other</option>
+            </select>
+          </div>
+          <div class="form-field"><label for="inq-message">Message / Part Details</label><textarea id="inq-message" name="message" placeholder="Mention part number, quantity needed, or any specific requirements..." rows="4"></textarea></div>
+          <div class="form-divider"><span>Quick Submit</span></div>
+          <button type="submit" class="btn-submit">Send Enquiry<svg viewBox="0 0 16 16" fill="none"><path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <div id="formStatus"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="about-left reveal">
+    <div class="s-eye">About Us</div>
+    <div class="s-head">Machine Parts<br>Specialist.</div>
+    <p class="about-body">Shiv Enterprise has been supplying all types of machinery parts to workshops, factories, and industries across Ahmedabad for over three decades. Located in Amraiwadi, we stock a wide range of bearings, belts, seals, fasteners, and electrical components — all under one roof.</p>
+    <div class="about-details">
+      <div class="adetail"><div class="adetail-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2L12.5 7.5H18L13.5 11L15.5 17L10 13.5L4.5 17L6.5 11L2 7.5H7.5L10 2Z" stroke="#F5A623" stroke-width="1.2" fill="none"/></svg></div><div><div class="adetail-label">Specialisation</div><div class="adetail-val">All Type of Machinery Parts — Bearings, Seals, Belts, Fasteners, Clips & Electrical Wire</div></div></div>
+      <div class="adetail"><div class="adetail-icon"><svg viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="12" rx="2" stroke="#F5A623" stroke-width="1.2"/><path d="M6 10H14M6 13H11" stroke="#F5A623" stroke-width="1.2" stroke-linecap="round"/></svg></div><div><div class="adetail-label">GST & PAN</div><div class="adetail-val">PAN: APZPP7394A &nbsp;|&nbsp; GSTIN: 24APZPP7394A1ZB</div></div></div>
+      <div class="adetail"><div class="adetail-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M3 5C3 3.9 3.9 3 5 3H15C16.1 3 17 3.9 17 5V13C17 14.1 16.1 15 15 15H5C3.9 15 3 14.1 3 13V5Z" stroke="#F5A623" stroke-width="1.2"/></svg></div><div><div class="adetail-label">Contact</div><div class="adetail-val">Ph: <a href="tel:9979900505" style="color:var(--gold)">+91-9979900505</a> &nbsp;|&nbsp; <a href="mailto:kanulic30@gmail.com" style="color:var(--gold)">kanulic30@gmail.com</a></div></div></div>
+    </div>
+  </div>
+  <div class="about-right reveal">
+    <div class="about-3d-card">
+      <div class="card-gst-title">Company Registration Details</div>
+      <div class="card-row"><span class="card-k">Company Name</span><span class="card-v">Shiv Enterprise</span></div>
+      <div class="card-row"><span class="card-k">PAN Number</span><span class="card-v">APZPP7394A</span></div>
+      <div class="card-row"><span class="card-k">GSTIN</span><span class="card-v">24APZPP7394A1ZB</span></div>
+      <div class="card-row"><span class="card-k">State Code</span><span class="card-v">24 — Gujarat</span></div>
+      <div class="card-row"><span class="card-k">Business Type</span><span class="card-v">Machinery Parts</span></div>
+      <div class="card-row"><span class="card-k">Phone</span><span class="card-v">+91-9979900505</span></div>
+      <div class="card-row"><span class="card-k">Email</span><span class="card-v" style="font-size:12px">kanulic30@gmail.com</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="location" id="location">
+  <div class="s-eye reveal">Find Us</div>
+  <div class="s-head reveal">Visit Our Store</div>
+  <div class="location-inner">
+    <div class="location-details">
+      <div class="ldetail reveal"><div class="ldetail-icon"><svg viewBox="0 0 22 22" fill="none"><path d="M11 2C7.7 2 5 4.7 5 8C5 12.5 11 20 11 20C11 20 17 12.5 17 8C17 4.7 14.3 2 11 2Z" stroke="#F5A623" stroke-width="1.4"/><circle cx="11" cy="8" r="2.5" stroke="#F5A623" stroke-width="1.4"/></svg></div><div><div class="ldetail-label">Address</div><div class="ldetail-val">Shop No: 16, Gurudevnagar Society, Opp. Navneet Bookstall, Wonder Point CTM, Jogeshwari Road, Amraiwadi, Ahmedabad — 380026, Gujarat</div></div></div>
+      <div class="ldetail reveal"><div class="ldetail-icon"><svg viewBox="0 0 22 22" fill="none"><path d="M4 4C4 4 6 2 8 4L10 7C10 7 11 8 9 10C9 10 12 14 14 14C14 14 16 12 17 13L20 15C22 17 20 19 20 19C18 21 4 16 4 4Z" stroke="#F5A623" stroke-width="1.4"/></svg></div><div><div class="ldetail-label">Phone</div><div class="ldetail-val"><a href="tel:9979900505">+91-9979900505</a></div></div></div>
+      <div class="ldetail reveal"><div class="ldetail-icon"><svg viewBox="0 0 22 22" fill="none"><rect x="2" y="5" width="18" height="13" rx="2" stroke="#F5A623" stroke-width="1.4"/><path d="M2 8L11 13.5L20 8" stroke="#F5A623" stroke-width="1.4"/></svg></div><div><div class="ldetail-label">Email</div><div class="ldetail-val"><a href="mailto:kanulic30@gmail.com">kanulic30@gmail.com</a></div></div></div>
+      <div class="ldetail reveal"><div class="ldetail-icon"><svg viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8" stroke="#F5A623" stroke-width="1.4"/><path d="M11 7V11L14 13" stroke="#F5A623" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="ldetail-label">Working Hours</div><div class="ldetail-val">Mon – Sat: 9:00 AM – 7:00 PM<br>Sunday: Closed</div></div></div>
+    </div>
+    <div class="map-wrapper reveal">
+      <div class="map-badge"><div class="dot"></div><span>Shiv Enterprise, Amraiwadi</span></div>
+      <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3605.702010077065!2d72.63180927531313!3d22.999843579189694!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjLCsDU5JzU5LjQiTiA3MsKwMzgnMDMuOCJF!5e1!3m2!1sen!2sin!4v1775389668331!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <a href="https://www.google.com/maps/place/22°59'59.4%22N+72°38'03.8%22E/@22.9998436,72.6318093,828m" target="_blank" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:10;"></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-logo">SHIV <span>ENTERPRISE</span></div>
+  <div class="foot-gst">GSTIN: 24APZPP7394A1ZB &nbsp;|&nbsp; PAN: APZPP7394A</div>
+  <div class="foot-links">
+    <a href="#products">Products</a><a href="#about">About</a><a href="#location">Location</a><a href="tel:9979900505">Call Us</a>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ── CURSOR (desktop only) ──
+if(window.innerWidth > 768){
+  const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+  let cx=0,cy=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{cx=e.clientX;cy=e.clientY;cur.style.left=cx+'px';cur.style.top=cy+'px';});
+  (function animCursor(){rx+=(cx-rx)*0.12;ry+=(cy-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animCursor);})();
+  document.querySelectorAll('a,button,.pcard').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{cur.style.width='18px';cur.style.height='18px';ring.style.width='52px';ring.style.height='52px';});
+    el.addEventListener('mouseleave',()=>{cur.style.width='10px';cur.style.height='10px';ring.style.width='36px';ring.style.height='36px';});
+  });
+}
+
+// ── HAMBURGER ──
+const toggle=document.getElementById('menu-toggle'),navLinks=document.getElementById('nav-links');
+toggle.addEventListener('click',()=>{navLinks.classList.toggle('active');toggle.textContent=navLinks.classList.contains('active')?'✕':'☰';});
+document.querySelectorAll('.nav-link-item').forEach(link=>{link.addEventListener('click',()=>{navLinks.classList.remove('active');toggle.textContent='☰';});});
+
+// ── THREE.JS 3D SCENE ──
+(function(){
+  const isMobile = window.innerWidth <= 768;
+  const W=()=>window.innerWidth,H=()=>window.innerHeight;
+  const container=document.getElementById('canvas-container');
+  const scene=new THREE.Scene();
+  scene.fog=new THREE.FogExp2(0x0a0e14,0.038);
+  scene.background=new THREE.Color(0x0a0e14);
+  const camera=new THREE.PerspectiveCamera(42,W()/H(),0.1,100);
+  camera.position.set(0,0.5,8);
+  const renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.setSize(W(),H());
+  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.2;
+  container.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0x1a1408,0.8));
+  const key=new THREE.DirectionalLight(0xffffff,3);
+  key.position.set(6,8,5);key.castShadow=true;key.shadow.mapSize.set(2048,2048);scene.add(key);
+  const rim=new THREE.DirectionalLight(0xf5a623,2.5);rim.position.set(-5,-2,-3);scene.add(rim);
+  const fill=new THREE.DirectionalLight(0x3a2a10,1.2);fill.position.set(2,-3,6);scene.add(fill);
+  const pt1=new THREE.PointLight(0xf5a623,5,12);pt1.position.set(-3,2,3);scene.add(pt1);
+  const pt2=new THREE.PointLight(0xc0392b,2,10);pt2.position.set(4,3,-2);scene.add(pt2);
+
+  const steelM=new THREE.MeshStandardMaterial({color:0x2a2010,metalness:0.95,roughness:0.1});
+  const goldM=new THREE.MeshStandardMaterial({color:0xf5a623,metalness:0.8,roughness:0.2,emissive:0xf5a623,emissiveIntensity:0.25});
+  const darkM=new THREE.MeshStandardMaterial({color:0x050709,metalness:0.9,roughness:0.3});
+  const redM=new THREE.MeshStandardMaterial({color:0xc0392b,metalness:0.7,roughness:0.3,emissive:0xc0392b,emissiveIntensity:0.1});
+  const wireM=new THREE.MeshBasicMaterial({color:0x3a2a10,wireframe:true,transparent:true,opacity:0.06});
+
+  const grp=new THREE.Group();scene.add(grp);
+  grp.add(new THREE.Mesh(new THREE.TorusGeometry(2,0.38,32,64),steelM));
+  grp.add(new THREE.Mesh(new THREE.TorusGeometry(1.1,0.28,32,64),steelM));
+  const ballGeo=new THREE.SphereGeometry(0.18,24,24);
+  const ballM=new THREE.MeshStandardMaterial({color:0xd4a840,metalness:0.98,roughness:0.04});
+  for(let i=0;i<10;i++){const angle=(i/10)*Math.PI*2;const b=new THREE.Mesh(ballGeo,ballM);b.position.set(Math.cos(angle)*1.58,Math.sin(angle)*1.58,0);grp.add(b);}
+  const disc=new THREE.Mesh(new THREE.CylinderGeometry(0.78,0.78,0.1,64),steelM);disc.rotation.x=Math.PI/2;grp.add(disc);
+  const bore=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.42,0.8,40),darkM);bore.rotation.x=Math.PI/2;grp.add(bore);
+  const gRing=new THREE.Mesh(new THREE.TorusGeometry(1.58,0.04,8,40),goldM);grp.add(gRing);
+  for(let i=0;i<6;i++){const angle=(i/6)*Math.PI*2;const s=new THREE.Mesh(new THREE.BoxGeometry(0.08,0.58,0.08),steelM);s.position.set(Math.cos(angle)*0.95,Math.sin(angle)*0.95,0);s.rotation.z=angle;grp.add(s);}
+  grp.add(new THREE.Mesh(new THREE.TorusGeometry(2,0.39,8,24),wireM));
+  for(let i=0;i<4;i++){const angle=(i/4)*Math.PI*2;const d=new THREE.Mesh(new THREE.SphereGeometry(0.08,16,16),redM);d.position.set(Math.cos(angle)*2,Math.sin(angle)*2,0.25);grp.add(d);}
+
+  const floaters=[];
+  const fGeos=[new THREE.BoxGeometry(0.25,0.25,0.25),new THREE.TorusGeometry(0.2,0.06,8,20),new THREE.CylinderGeometry(0.1,0.1,0.4,16)];
+  const fMats=[new THREE.MeshStandardMaterial({color:0xf5a623,metalness:0.9,roughness:0.2,transparent:true,opacity:0.4}),new THREE.MeshStandardMaterial({color:0x2a2010,metalness:0.95,roughness:0.1,transparent:true,opacity:0.45}),new THREE.MeshStandardMaterial({color:0xc0392b,metalness:0.8,roughness:0.25,transparent:true,opacity:0.35})];
+  for(let i=0;i<22;i++){const mesh=new THREE.Mesh(fGeos[i%3],fMats[i%3]);const angle=(i/22)*Math.PI*2;const r=5+Math.random()*2.5;mesh.position.set(Math.cos(angle)*r,(Math.random()-.5)*5,-4-Math.random()*4);mesh.rotation.set(Math.random()*6,Math.random()*6,Math.random()*6);const spd=0.003+Math.random()*0.004;floaters.push({mesh,spd,angle,r});scene.add(mesh);}
+
+  const pN=400,pP=new Float32Array(pN*3);
+  for(let i=0;i<pN;i++){pP[i*3]=(Math.random()-.5)*24;pP[i*3+1]=(Math.random()-.5)*24;pP[i*3+2]=(Math.random()-.5)*20-5;}
+  const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(pP,3));
+  scene.add(new THREE.Points(pg,new THREE.PointsMaterial({color:0x6a4a20,size:0.02,transparent:true,opacity:0.6})));
+
+  const grid=new THREE.GridHelper(30,30,0x2a1a08,0x2a1a08);grid.position.y=-5;grid.material.transparent=true;grid.material.opacity=0.25;scene.add(grid);
+
+  // FIX 3: No touch interaction on mobile — bearing stays still
+  let mx=0,my=0,drag=false,lmx=0,lmy=0,vx=0,vy=0,tRotX=0,tRotY=0;
+  if(!isMobile){
+    window.addEventListener('mousemove',e=>{
+      if(drag){vx+=(e.clientX-lmx)*0.013;vy+=(e.clientY-lmy)*0.013;lmx=e.clientX;lmy=e.clientY;}
+      else{mx=(e.clientX/W()-.5)*2;my=-(e.clientY/H()-.5)*2;}
+    });
+    window.addEventListener('mousedown',e=>{drag=true;lmx=e.clientX;lmy=e.clientY;});
+    window.addEventListener('mouseup',()=>drag=false);
+  }
+
+  window.addEventListener('resize',()=>{camera.aspect=W()/H();camera.updateProjectionMatrix();renderer.setSize(W(),H());});
+
+  let t=0;
+  (function loop(){
+    requestAnimationFrame(loop);t+=0.01;
+    tRotY+=vx;tRotX+=vy;vx*=0.87;vy*=0.87;
+    if(!isMobile && !drag){tRotY+=(mx*0.5-tRotY)*0.04;tRotX+=(my*0.25-tRotX)*0.04;}
+    grp.rotation.y=tRotY;
+    grp.rotation.x=Math.max(-1,Math.min(1,tRotX));
+    grp.position.y=Math.sin(t*0.5)*0.15;
+    gRing.rotation.z+=0.006;
+    pt1.position.x=Math.sin(t*0.65)*4.5;pt1.position.y=Math.cos(t*0.45)*2.5;
+    pt2.position.x=Math.cos(t*0.4)*4;pt2.position.y=Math.sin(t*0.6)*2;
+    floaters.forEach(f=>{f.angle+=f.spd;f.mesh.position.x=Math.cos(f.angle)*f.r;f.mesh.position.z=Math.sin(f.angle)*f.r*0.5-4;f.mesh.rotation.x+=f.spd*0.6;f.mesh.rotation.y+=f.spd*0.9;});
+    if(!isMobile){camera.position.x+=(mx*0.15-camera.position.x)*0.05;camera.position.y+=(my*0.08-camera.position.y)*0.05;}
+    camera.lookAt(0,0,0);
+    renderer.render(scene,camera);
+  })();
+})();
+
+// ── SCROLL REVEAL ──
+const revEls=document.querySelectorAll('.reveal');
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+revEls.forEach(el=>obs.observe(el));
+
+// ── INQUIRY FORM ──
+(function(){
+  const form=document.getElementById('inquiryForm'),status=document.getElementById('formStatus');
+  if(!form)return;
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    const name=document.getElementById('inq-name').value.trim();
+    const phone=document.getElementById('inq-phone').value.trim();
+    const product=document.getElementById('inq-product').value;
+    if(!name){showStatus('Please enter your name.','error');return;}
+    if(!phone||phone.replace(/\D/g,'').length<10){showStatus('Please enter a valid 10-digit phone number.','error');return;}
+    if(!product){showStatus('Please select a product category.','error');return;}
+    const email=document.getElementById('inq-email').value.trim();
+    const city=document.getElementById('inq-city').value.trim();
+    const message=document.getElementById('inq-message').value.trim();
+    const wa=[`*New Enquiry — Shiv Enterprise*`,``,`*Name:* ${name}`,`*Phone:* ${phone}`,email?`*Email:* ${email}`:null,city?`*City:* ${city}`:null,`*Product:* ${product}`,message?`*Message:* ${message}`:null].filter(Boolean).join('\n');
+    window.open(`https://wa.me/919979900505?text=${encodeURIComponent(wa)}`,'_blank');
+    showStatus('Opening WhatsApp… your enquiry is ready to send! ✓','success');
+    form.reset();
+  });
+  function showStatus(msg,type){status.textContent=msg;status.className=type;setTimeout(()=>{status.textContent='';status.className='';},5000);}
+})();
+</script>
+</body>
+</html>
