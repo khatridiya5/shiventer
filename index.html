@@ -43,11 +43,24 @@ nav{position:fixed;top:0;left:0;width:100%;z-index:1000;display:flex;align-items
 
 @media(max-width:768px){
   :root{--nav-h:60px;}
-  nav{padding:0 16px;gap:12px;display:grid;grid-template-columns:1fr auto auto;align-items:center;}
+  nav{padding:0 16px;gap:16px;display:grid;grid-template-columns:1fr auto auto;align-items:center;}
   .logo-txt{font-size:17px;}
   .menu-toggle{display:flex;align-items:center;justify-content:center;}
-  /* FIX 1: Force gold on mobile call button */
-  .nav-call{padding:7px 12px;font-size:11px;order:2;background:var(--gold) !important;color:var(--dark) !important;}
+  
+  /* FIX 1: Cleaner gold call button on mobile */
+.nav-call{
+  padding:8px 14px;
+  font-size:11px;
+  order:2;
+  background:var(--gold) !important;
+  color:var(--dark) !important;
+  border-radius:6px;
+  gap:5px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
+}
   .nav-links{position:fixed;top:var(--nav-h);left:0;width:100%;flex-direction:column;align-items:center;gap:0;background:rgba(10,14,20,0.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0;margin:0;max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s ease;}
   .nav-links.active{max-height:300px;padding:16px 0 20px;}
   .nav-links li{width:100%;text-align:center;}
