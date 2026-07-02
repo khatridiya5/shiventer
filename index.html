@@ -47,8 +47,16 @@ nav{position:fixed;top:0;left:0;width:100%;z-index:1000;display:flex;align-items
   :root{--nav-h:60px;}
   nav{padding:0 12px;gap:8px;display:flex;align-items:center;justify-content:space-between;}
   .logo-txt{font-size:14px;flex-shrink:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .nav-logo-img{height:44px;width:auto;display:block;}
-  @media(max-width:768px){.nav-logo-img{height:34px;}}
+  .nav-logo-img{
+  height:44px !important;
+  width:auto !important;
+  max-width:160px;
+  display:block;
+  object-fit:contain;
+}
+@media(max-width:768px){
+  .nav-logo-img{height:32px !important;}
+}
   .menu-toggle{display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   /* FIX 1: Call button now fits within frame */
   .nav-call{
