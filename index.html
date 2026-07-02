@@ -47,6 +47,8 @@ nav{position:fixed;top:0;left:0;width:100%;z-index:1000;display:flex;align-items
   :root{--nav-h:60px;}
   nav{padding:0 12px;gap:8px;display:flex;align-items:center;justify-content:space-between;}
   .logo-txt{font-size:14px;flex-shrink:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .nav-logo-img{height:44px;width:auto;display:block;}
+  @media(max-width:768px){.nav-logo-img{height:34px;}}
   .menu-toggle{display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   /* FIX 1: Call button now fits within frame */
   .nav-call{
@@ -267,8 +269,8 @@ footer{position:relative;z-index:10;background:#050709;padding:44px 72px;border-
 
 <nav>
   <a href="#" class="nav-logo">
-    <span class="logo-txt">Kynex <span>ENTERPRISE</span></span>
-  </a>
+  <img src="logo.png" alt="Kynex Enterprise" class="nav-logo-img">
+</a>
   <ul class="nav-links" id="nav-links">
     <li><a href="#products" class="nav-link-item">PRODUCTS</a></li>
     <li><a href="#about" class="nav-link-item">ABOUT</a></li>
